@@ -2,6 +2,7 @@ package net.masterthought.cucumber;
 
 import static net.masterthought.cucumber.FileReaderUtil.getAbsolutePathFromResource;
 import net.masterthought.cucumber.json.Feature;
+import net.masterthought.cucumber.json.FeatureBehave;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -20,6 +21,14 @@ public class ReportParserTest {
         assertThat(reportParser.getFeatures().entrySet().size(), is(2));
         assertThat(reportParser.getFeatures().entrySet().iterator().next().getValue().get(0), is(Feature.class));
         assertThat(reportParser.getFeatures().entrySet().iterator().next().getValue().get(1), is(Feature.class));
+    }
+
+    @Test
+    public void shouldReturnAListOfFeaturesFromABehaveReport() throws IOException {
+        ReportParser reportParser = new ReportParser(withBehaveSingleScenarioReport(), true);
+        assertThat(reportParser.getFeatures().entrySet().size(), is(2));
+        assertThat(reportParser.getFeatures().entrySet().iterator().next().getValue().get(0), is(FeatureBehave.class));
+        assertThat(reportParser.getFeatures().entrySet().iterator().next().getValue().get(1), is(FeatureBehave.class));
     }
 
     @Test
@@ -105,6 +114,12 @@ public class ReportParserTest {
         List<String> jsonReports = new ArrayList<String>();
         jsonReports.add(getAbsolutePathFromResource("net/masterthought/cucumber/project1.json"));
         jsonReports.add(getAbsolutePathFromResource("net/masterthought/cucumber/noscenario.json"));
+        return jsonReports;
+    }
+
+    private List<String> withBehaveSingleScenarioReport() {
+        List<String> jsonReports = new ArrayList<String>();
+        jsonReports.add(getAbsolutePathFromResource("net/masterthought/cucumber/cc-5a.json"));
         return jsonReports;
     }
 

@@ -14,40 +14,23 @@ import java.util.List;
 
 import static com.googlecode.totallylazy.Option.option;
 
-public class Element {
+public abstract class Element {
 
     private String name;
     private String description;
     private String keyword;
-    private Step[] steps;
     private Tag[] tags;
 
     public Element() {
 
     }
 
-    public Sequence<Step> getSteps() {
-        return Sequences.sequence(option(steps).getOrElse(new Step[]{})).realise();
-    }
+    public abstract Util.Status getStatus();
 
     public Sequence<Tag> getTags() {
         return Sequences.sequence(option(tags).getOrElse(new Tag[]{})).realise();
     }
 
-    public Util.Status getStatus() {
-    	// can be optimized to retrieve only the count of elements and not the all list
-        int results = getSteps().filter(Step.predicates.hasStatus(Util.Status.FAILED)).size();
-        
-        if (results == 0 && ConfigurationOptions.skippedFailsBuild()) {
-        	results = getSteps().filter(Step.predicates.hasStatus(Util.Status.SKIPPED)).size();
-        }
-
-        if (results == 0 && ConfigurationOptions.undefinedFailsBuild()) {
-        	results = getSteps().filter(Step.predicates.hasStatus(Util.Status.UNDEFINED)).size();
-        }
-        
-        return results == 0 ? Util.Status.PASSED : Util.Status.FAILED;
-    }
 
     public String getRawName() {
         return name;

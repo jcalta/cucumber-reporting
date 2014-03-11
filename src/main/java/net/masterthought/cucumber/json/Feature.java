@@ -11,11 +11,10 @@ import org.apache.commons.lang.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Feature {
+public abstract class Feature {
 
     private String name;
     private String uri;
-    private String description;
     private String keyword;
     private Element[] elements;
     private Tag[] tags;
@@ -82,18 +81,6 @@ public class Feature {
 
     public String getRawStatus() {
         return getStatus().toString().toLowerCase();
-    }
-
-    public String getDescription() {
-        String result = "";
-        if (Util.itemExists(description)) {
-            String content = description.replaceFirst("As an", "<span class=\"feature-role\">As an</span>");
-            content = content.replaceFirst("I want to", "<span class=\"feature-action\">I want to</span>");
-            content = content.replaceFirst("So that", "<span class=\"feature-value\">So that</span>");
-            content = content.replaceAll("\n", "<br/>");
-            result = "<div class=\"feature-description\">" + content + "</div>";
-        }
-        return result;
     }
 
     public int getNumberOfScenarios() {

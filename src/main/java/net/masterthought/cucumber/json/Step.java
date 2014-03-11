@@ -14,21 +14,24 @@ import java.util.UUID;
 import static com.googlecode.totallylazy.Option.option;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 
-public class Step {
+public abstract class Step {
 
-    private String name;
-    private String keyword;
-    private String line;
-    private Result result;
-    private Row[] rows;
-    private Match match;
-    private Object[] embeddings;
-    private String[] output;
-    private DocString doc_string;
+    protected String name;
+    protected String keyword;
+    protected String line;
+    protected Row[] rows;
+    protected Match match;
+    protected Object[] embeddings;
+    protected String[] output;
+    protected DocString doc_string;
 
     public Step() {
 
     }
+
+    public abstract Util.Status getStatus();
+    public abstract String getName();
+    protected abstract String getNameAndDuration();
 
     public DocString getDocString() {
         return doc_string;
@@ -68,23 +71,6 @@ public class Step {
         return doc_string != null && doc_string.hasValue();
     }
 
-    public Util.Status getStatus() {
-        if (result == null) {
-            System.out.println("[WARNING] Line " + line + " : " + "Step is missing Result: " + keyword + " : " + name);
-            return Util.Status.MISSING;
-        } else {
-            return Util.resultMap.get(result.getStatus());
-        }
-    }
-
-    public Long getDuration() {
-        if (result == null) {
-            return 1L;
-        } else {
-            return result.getDuration();
-        }
-    }
-
     public String getDataTableClass() {
         String content = "";
         Util.Status status = getStatus();
@@ -102,36 +88,6 @@ public class Step {
 
     public String getRawName() {
         return name;
-    }
-
-    public String getName() {
-        String content = "";
-        if (getStatus() == Util.Status.FAILED) {
-            String errorMessage = result.getErrorMessage();
-            if (getStatus() == Util.Status.SKIPPED) {
-                errorMessage = "Mode: Skipped causes Failure<br/><span class=\"skipped\">This step was skipped</span>";
-            }
-            if (getStatus() == Util.Status.UNDEFINED) {
-                errorMessage = "Mode: Not Implemented causes Failure<br/><span class=\"undefined\">This step is not yet implemented</span>";
-            }
-            content = Util.result(getStatus()) + "<span class=\"step-keyword\">" + keyword + " </span><span class=\"step-name\">" + name + "</span><span class=\"step-duration\">" + Util.formatDuration(result.getDuration()) + "</span><div class=\"step-error-message\"><pre>" + formatError(errorMessage) + "</pre></div>" + Util.closeDiv() + getImageTags();
-        } else if (getStatus() == Util.Status.MISSING) {
-            String errorMessage = "<span class=\"missing\">Result was missing for this step</span>";
-            content = Util.result(getStatus()) + "<span class=\"step-keyword\">" + keyword + " </span><span class=\"step-name\">" + name + "</span><span class=\"step-duration\">" + Util.formatDuration(result.getDuration()) + "</span><div class=\"step-error-message\"><pre>" + formatError(errorMessage) + "</pre></div>" + Util.closeDiv();
-        } else {
-            content = getNameAndDuration();
-        }
-        return content;
-    }
-
-    private String getNameAndDuration() {
-        String content = Util.result(getStatus())
-                + "<span class=\"step-keyword\">" + keyword
-                + " </span><span class=\"step-name\">" + name + "</span>"
-                + "<span class=\"step-duration\">" + Util.formatDuration(result.getDuration()) + "</span>"
-                + Util.closeDiv() + getImageTags();
-
-        return content;
     }
 
     /**
@@ -152,7 +108,7 @@ public class Step {
                 Util.closeDiv();
     }
 
-    private String formatError(String errorMessage) {
+    protected String formatError(String errorMessage) {
         String result = errorMessage;
         if (errorMessage != null && !errorMessage.isEmpty()) {
             result = errorMessage.replaceAll("\\\\n", "<br/>");
@@ -180,7 +136,7 @@ public class Step {
         return links;
     }
 
-    private boolean noEmbeddedScreenshots() {
+    protected boolean noEmbeddedScreenshots() {
         return getEmbeddings() == null;
     }
 
