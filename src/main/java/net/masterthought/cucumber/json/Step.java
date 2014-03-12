@@ -69,7 +69,7 @@ public abstract class Step {
         return doc_string != null && doc_string.hasValue();
     }
 
-    private Util.Status getInternalStatus() {
+    public Util.Status getStatus() {
         Result result = getResult();
         if (result == null) {
             System.out.println("[WARNING] Line " + line + " : " + "Step is missing Result: " + keyword + " : " + name);
@@ -79,30 +79,8 @@ public abstract class Step {
         }
     }
 
-    public Util.Status getStatus() {
-        Util.Status status = getInternalStatus();
-        Util.Status result = status;
-
-        if (ConfigurationOptions.skippedFailsBuild()) {
-            if (status == Util.Status.SKIPPED || status == Util.Status.FAILED) {
-                result = Util.Status.FAILED;
-            }
-        }
-
-        if (ConfigurationOptions.undefinedFailsBuild()) {
-            if (status == Util.Status.UNDEFINED || status == Util.Status.FAILED) {
-                result = Util.Status.FAILED;
-            }
-        }
-
-        if (status == Util.Status.FAILED) {
-            result = Util.Status.FAILED;
-        }
-        return result;
-    }
-
     public Long getDuration() {
-        Result result = getResult();        
+        Result result = getResult();
         if (result == null) {
             return 1L;
         } else {
@@ -131,24 +109,36 @@ public abstract class Step {
 
     public String getName() {
         String content = "";
-        Result result = getResult();        
+        Result result = getResult();
         if (getStatus() == Util.Status.FAILED) {
             String errorMessage = result.getErrorMessage();
-            if (getInternalStatus() == Util.Status.SKIPPED) {
+            if (getStatus() == Util.Status.SKIPPED) {
                 errorMessage = "Mode: Skipped causes Failure<br/><span class=\"skipped\">This step was skipped</span>";
             }
-            if (getInternalStatus() == Util.Status.UNDEFINED) {
+            if (getStatus() == Util.Status.UNDEFINED) {
                 errorMessage = "Mode: Not Implemented causes Failure<br/><span class=\"undefined\">This step is not yet implemented</span>";
             }
-            content = Util.result(getStatus()) + "<span class=\"step-keyword\">" + keyword + " </span><span class=\"step-name\">" + name + "</span>" + "<div class=\"step-error-message\"><pre>" + formatError(errorMessage) + "</pre></div>" + Util.closeDiv() + getImageTags();
+            content = Util.result(getStatus()) + "<span class=\"step-keyword\">" + keyword + " </span><span class=\"step-name\">" + name + "</span><span class=\"step-duration\">" + Util.formatDuration(result.getDuration()) + "</span><div class=\"step-error-message\"><pre>" + formatError(errorMessage) + "</pre></div>" + Util.closeDiv() + getImageTags();
         } else if (getStatus() == Util.Status.MISSING) {
             String errorMessage = "<span class=\"missing\">Result was missing for this step</span>";
-            content = Util.result(getStatus()) + "<span class=\"step-keyword\">" + keyword + " </span><span class=\"step-name\">" + name + "</span>" + "<div class=\"step-error-message\"><pre>" + formatError(errorMessage) + "</pre></div>" + Util.closeDiv();
+            content = Util.result(getStatus()) + "<span class=\"step-keyword\">" + keyword + " </span><span class=\"step-name\">" + name + "</span><span class=\"step-duration\">" + Util.formatDuration(result.getDuration()) + "</span><div class=\"step-error-message\"><pre>" + formatError(errorMessage) + "</pre></div>" + Util.closeDiv();
         } else {
-            content = Util.result(getStatus()) + "<span class=\"step-keyword\">" + keyword + " </span><span class=\"step-name\">" + name + "</span>" + Util.closeDiv() + getImageTags();
+            content = getNameAndDuration();
         }
         return content;
     }
+
+    private String getNameAndDuration() {
+        Result result = getResult();
+        String content = Util.result(getStatus())
+                + "<span class=\"step-keyword\">" + keyword
+                + " </span><span class=\"step-name\">" + name + "</span>"
+                + "<span class=\"step-duration\">" + Util.formatDuration(result.getDuration()) + "</span>"
+                + Util.closeDiv() + getImageTags();
+
+        return content;
+    }
+
 
     /**
 * Returns a formatted doc-string section.
@@ -169,7 +159,7 @@ public abstract class Step {
 
     private String formatError(String errorMessage) {
         String result = errorMessage;
-        if (errorMessage != null || !errorMessage.isEmpty()) {
+        if (errorMessage != null && !errorMessage.isEmpty()) {
             result = errorMessage.replaceAll("\\\\n", "<br/>");
         }
         return result;
