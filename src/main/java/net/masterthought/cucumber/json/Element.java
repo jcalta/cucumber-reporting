@@ -16,20 +16,22 @@ public abstract class Element {
     private String name;
     private String description;
     private String keyword;
-    private Tag[] tags;
 
     public Element() {
 
     }
 
-    protected abstract Step[] getStepList();
+    protected abstract Step[] getStepArray();
+
+    protected abstract Tag[] getTagArray();
 
     public Sequence<Step> getSteps() {
-        Step[] steps = getStepList();
+        Step[] steps = getStepArray();
         return Sequences.sequence(option(steps).getOrElse(new Step[]{})).realise();
     }
 
     public Sequence<Tag> getTags() {
+        Tag[] tags = getTagArray();
         return Sequences.sequence(option(tags).getOrElse(new Tag[]{})).realise();
     }
 
@@ -65,6 +67,7 @@ public abstract class Element {
     }
 
     public boolean hasTags() {
+        Tag[] tags = getTagArray();
         return Util.itemExists(tags);
     }
 
@@ -74,6 +77,7 @@ public abstract class Element {
 
     public String getTagsList() {
         String result = "<div class=\"feature-tags\"></div>";
+        Tag[] tags = getTagArray();
         if (Util.itemExists(tags)) {
             String tagList = StringUtils.join(processTags().toList().toArray(), ",");
             result = "<div class=\"feature-tags\">" + tagList + "</div>";

@@ -26,9 +26,8 @@ public class ReportParserTest {
     @Test
     public void shouldReturnAListOfFeaturesFromABehaveReport() throws IOException {
         ReportParser reportParser = new ReportParser(withBehaveSingleScenarioReport(), true);
-        assertThat(reportParser.getFeatures().entrySet().size(), is(2));
+        assertThat(reportParser.getFeatures().entrySet().size(), is(1));
         assertThat(reportParser.getFeatures().entrySet().iterator().next().getValue().get(0), is(FeatureBehave.class));
-        assertThat(reportParser.getFeatures().entrySet().iterator().next().getValue().get(1), is(FeatureBehave.class));
     }
 
     @Test

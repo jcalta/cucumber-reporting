@@ -6,8 +6,13 @@ import net.masterthought.cucumber.json.StepCucumber;
 public class ElementCucumber extends Element {
 
     private StepCucumber[] steps;
+    private Tag[] tags;    
 
-    protected Step[] getStepList() {
+    protected Step[] getStepArray() {
         return steps;
+    }
+
+    protected Tag[] getTagArray() {
+        return tags;
     }
 }

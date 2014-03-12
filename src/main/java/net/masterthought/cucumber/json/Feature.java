@@ -16,7 +16,6 @@ public abstract class Feature {
     private String name;
     private String uri;
     private String keyword;
-    private Tag[] tags;
     private StepResults stepResults;
     private ScenarioResults scenarioResults;
 
@@ -27,10 +26,12 @@ public abstract class Feature {
 
     protected abstract String getDescriptionString();
 
-    protected abstract Element[] getElementList();
+    protected abstract Element[] getElementArray();
+
+    protected abstract Tag[] getTagArray();
 
     public Sequence<Element> getElements() {
-        Element[] elements = getElementList();
+        Element[] elements = getElementArray();
         return Sequences.sequence(elements).realise();
     }
 
@@ -50,6 +51,7 @@ public abstract class Feature {
     }
 
     public boolean hasTags() {
+        Tag[] tags = getTagArray();
         return Util.itemExists(tags);
     }
 
@@ -58,11 +60,13 @@ public abstract class Feature {
     }
 
     public Sequence<Tag> getTags() {
+        Tag[] tags = getTagArray();
         return Sequences.sequence(tags).realise();
     }
 
     public String getTagsList() {
         String result = "<div class=\"feature-tags\"></div>";
+        Tag[] tags = getTagArray();
         if (Util.itemExists(tags)) {
             String tagList = StringUtils.join(getTagList().toList().toArray(), ",");
             result = "<div class=\"feature-tags\">" + tagList + "</div>";
@@ -102,7 +106,7 @@ public abstract class Feature {
 
     public int getNumberOfScenarios() {
         int result = 0;
-        Element[] elements = getElementList();
+        Element[] elements = getElementArray();
         if (Util.itemExists(elements)) {
             List<Element> elementList = new ArrayList<Element>();
             for (Element element : elements) {
@@ -166,7 +170,7 @@ public abstract class Feature {
         List<Element> passedScenarios = new ArrayList<Element>();
         List<Element> failedScenarios = new ArrayList<Element>();
         Long totalDuration = 0l;
-        Element[] elements = getElementList();
+        Element[] elements = getElementArray();
         if (Util.itemExists(elements)) {
             for (Element element : elements) {
                 calculateScenarioStats(passedScenarios, failedScenarios, element);

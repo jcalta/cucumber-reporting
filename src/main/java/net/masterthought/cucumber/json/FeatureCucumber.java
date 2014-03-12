@@ -18,12 +18,16 @@ public class FeatureCucumber extends Feature {
 
     private String description;
     private ElementCucumber[] elements;
+    private Tag[] tags;
 
     public String getDescriptionString() {
         return description;
     }
 
-    protected Element[] getElementList() {
+    protected Element[] getElementArray() {
         return elements;
+    }
+    protected Tag[] getTagArray() {
+        return tags;
     }
 }

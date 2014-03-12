@@ -10,13 +10,24 @@ public class FeatureBehave extends Feature {
 
     private String[] description;
     private ElementBehave[] elements;
+    private String[] tags;
+    private Tag[] tagArray;
 
     public String getDescriptionString() {
         return StringUtils.join(description);
     }
 
-    protected Element[] getElementList() {
+    protected Element[] getElementArray() {
         return elements;
     }
 
+    protected Tag[] getTagArray(){
+        if(! Util.itemExists(tagArray)) {
+            tagArray = new Tag[tags.length];
+            for(int i = 0; i < tags.length; i = i++) {
+                tagArray[i] = new Tag(tags[i]);
+            }
+        }
+        return tagArray;
+    }
 }
