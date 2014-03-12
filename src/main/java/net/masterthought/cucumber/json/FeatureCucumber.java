@@ -19,16 +19,11 @@ public class FeatureCucumber extends Feature {
     private String description;
     private ElementCucumber[] elements;
 
-    public String getDescription() {
-        String result = "";
-        if (Util.itemExists(description)) {
-            String content = description.replaceFirst("As an", "<span class=\"feature-role\">As an</span>");
-            content = content.replaceFirst("I want to", "<span class=\"feature-action\">I want to</span>");
-            content = content.replaceFirst("So that", "<span class=\"feature-value\">So that</span>");
-            content = content.replaceAll("\n", "<br/>");
-            result = "<div class=\"feature-description\">" + content + "</div>";
-        }
-        return result;
+    public String getDescriptionString() {
+        return description;
     }
 
+    protected Element[] getElementList() {
+        return elements;
+    }
 }

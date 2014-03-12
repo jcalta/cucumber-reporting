@@ -3,10 +3,7 @@ package net.masterthought.cucumber.json;
 import com.googlecode.totallylazy.Function1;
 import com.googlecode.totallylazy.Sequence;
 import com.googlecode.totallylazy.Sequences;
-
-import net.masterthought.cucumber.ConfigurationOptions;
 import net.masterthought.cucumber.util.Util;
-
 import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
@@ -25,12 +22,21 @@ public abstract class Element {
 
     }
 
-    public abstract Util.Status getStatus();
+    protected abstract Step[] getStepList();
+
+    public Sequence<Step> getSteps() {
+        Step[] steps = getStepList();
+        return Sequences.sequence(option(steps).getOrElse(new Step[]{})).realise();
+    }
 
     public Sequence<Tag> getTags() {
         return Sequences.sequence(option(tags).getOrElse(new Tag[]{})).realise();
     }
 
+    public Util.Status getStatus() {
+        Sequence<Step> results = getSteps().filter(Step.predicates.hasStatus(Util.Status.FAILED));
+        return results.size() == 0 ? Util.Status.PASSED : Util.Status.FAILED;
+    }
 
     public String getRawName() {
         return name;
@@ -87,3 +93,4 @@ public abstract class Element {
     }
 
 }
+

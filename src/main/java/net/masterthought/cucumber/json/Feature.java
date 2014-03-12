@@ -16,7 +16,6 @@ public abstract class Feature {
     private String name;
     private String uri;
     private String keyword;
-    private Element[] elements;
     private Tag[] tags;
     private StepResults stepResults;
     private ScenarioResults scenarioResults;
@@ -26,7 +25,12 @@ public abstract class Feature {
 
     }
 
+    protected abstract String getDescriptionString();
+
+    protected abstract Element[] getElementList();
+
     public Sequence<Element> getElements() {
+        Element[] elements = getElementList();
         return Sequences.sequence(elements).realise();
     }
 
@@ -83,8 +87,22 @@ public abstract class Feature {
         return getStatus().toString().toLowerCase();
     }
 
+    public String getDescription() {
+        String result = "";
+        String description = getDescriptionString();
+        if (Util.itemExists(description)) {
+            String content = description.replaceFirst("As an", "<span class=\"feature-role\">As an</span>");
+            content = content.replaceFirst("I want to", "<span class=\"feature-action\">I want to</span>");
+            content = content.replaceFirst("So that", "<span class=\"feature-value\">So that</span>");
+            content = content.replaceAll("\n", "<br/>");
+            result = "<div class=\"feature-description\">" + content + "</div>";
+        }
+        return result;
+    }
+
     public int getNumberOfScenarios() {
         int result = 0;
+        Element[] elements = getElementList();
         if (Util.itemExists(elements)) {
             List<Element> elementList = new ArrayList<Element>();
             for (Element element : elements) {
@@ -148,6 +166,7 @@ public abstract class Feature {
         List<Element> passedScenarios = new ArrayList<Element>();
         List<Element> failedScenarios = new ArrayList<Element>();
         Long totalDuration = 0l;
+        Element[] elements = getElementList();
         if (Util.itemExists(elements)) {
             for (Element element : elements) {
                 calculateScenarioStats(passedScenarios, failedScenarios, element);
