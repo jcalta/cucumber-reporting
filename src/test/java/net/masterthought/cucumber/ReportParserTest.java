@@ -118,7 +118,7 @@ public class ReportParserTest {
 
     private List<String> withBehaveSingleScenarioReport() {
         List<String> jsonReports = new ArrayList<String>();
-        jsonReports.add(getAbsolutePathFromResource("net/masterthought/cucumber/cc-5a.json"));
+        jsonReports.add(getAbsolutePathFromResource("net/masterthought/behave/cc-5a.json"));
         return jsonReports;
     }
 

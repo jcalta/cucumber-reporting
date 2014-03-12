@@ -6,3 +6,6 @@ velocity.log
 .settings/
 *.autosave
 .DS_Store
+
+
+/src/test/resources/net/masterthought/behave/*
